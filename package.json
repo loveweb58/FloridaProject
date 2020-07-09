@@ -10,7 +10,7 @@
         "@auth0/auth0-spa-js": "^1.6.3",
         "@glidejs/glide": "^3.3.0",
         "@react-pdf/renderer": "^1.6.9",
-        "auth0-js": "^9.12.2",
+        "auth0-js": "^9.13.2",
         "availity-reactstrap-validation": "^2.0.4",
         "aws-sdk": "^2.681.0",
         "axios": "^0.18.0",
