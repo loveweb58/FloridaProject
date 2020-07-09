@@ -1,0 +1,153 @@
+import React from 'react';
+import {
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Row,
+  Col,
+  Alert,
+  Form,
+  Label,
+  Input,
+  Table,
+  CustomInput,
+} from 'reactstrap';
+import { getMetaFields } from '../../../../redux/meta-fields/actions';
+import Switch from 'rc-switch';
+import 'rc-switch/assets/index.css';
+
+import IntlMessages from '../../../../helpers/IntlMessages';
+import { connect } from 'react-redux';
+import { getCategory, getCategorySubCategory } from '../../../../redux/category/actions';
+import Select from 'react-select';
+import CustomSelectInput from '../../../../components/common/CustomSelectInput';
+import { getPeopleCases, editCombinedCase } from '../../../../redux/people/actions';
+import Tesseract  from 'tesseract.js';
+import { Document, Page } from 'react-pdf/dist/entry.webpack';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import moment from "moment";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import Pdf from "react-to-pdf";
+
+var validator = require('validator');
+
+const options = {
+  cMapUrl: 'cmaps/',
+  cMapPacked: true,
+};
+
+const ref = React.createRef();
+const pdfOptions = {
+  getTextColor: 'black'
+};
+
+class ShowCombinedCaseModal extends React.Component {
+  state = {
+    error: null,
+    combined_case_name: '',
+    combined_case_description: '',
+    data_collections: [],
+    show_case_modal: true,
+  };
+
+  componentDidMount() {
+    this.setState({
+      person_name: this.props.personName,
+      combined_case_name: this.props.selectedCombinedCase.name,
+      combined_case_description: this.props.selectedCombinedCase.description,
+      data_collections: this.props.selectedCombinedCase.data_collections,
+    })
+  }
+
+  componentDidUpdate(prevProps) {
+  }
+
+
+  handleCancel = () => {
+    this.props.toggleModal();
+  }
+
+  handleExport = () => {
+ }
+ 
+
+  render() {
+    const { modalOpen, toggleModal } = this.props;
+    const { data_collections, show_case_modal } = this.state;
+    return (
+      <Modal isOpen={modalOpen} toggle={toggleModal} size="lg" backdrop="static">
+        <div ref={ref}>
+          <ModalHeader toggle={toggleModal}>{this.state.person_name}'s Combined Case</ModalHeader>
+          <ModalBody>
+            <Row>
+              <Col xs={12}>
+                  <h4>{this.state.combined_case_name}</h4>
+                  <br/>
+                  <h4>{this.state.combined_case_description}</h4>
+                  <br/>
+                  {data_collections && data_collections.map((caseItem, i) => {
+                    if(caseItem.isSelect) {
+                      return (
+                        <>
+                        <h4>{caseItem.name}</h4>
+                        <Table>
+                          <tbody>
+                            {caseItem.metaFields && caseItem.metaFields.map((metaItem, j) => {
+                              if(metaItem.isChecked) {
+                                return (
+                                  <tr key={metaItem.id} onClick={() => {
+    
+                                  }}>
+                                    <td style={{width: '50%'}}>{metaItem.name}</td>
+                                    <td style={{width: '50%'}}>{metaItem.type === 'int' ? metaItem.value 
+                                        : metaItem.type === 'str' ? metaItem.value 
+                                        : metaItem.type === 'bool' ? metaItem.value ? 'True' : 'False'
+                                        : metaItem.type === 'box' ? metaItem.value ? metaItem.value['label'] - metaItem.value['value'] : ''
+                                        : metaItem.type === 'date' ? metaItem.value ? moment(metaItem.value).format('DD-MM-YYYY') : ''
+                                        : metaItem.type === 'date_range' ? metaItem.value ? moment(metaItem.value[0]).format('DD-MM-YYYY') + ' ~ ' +  moment(metaItem.value[1]).format('DD-MM-YYYY'): ''
+                                        : metaItem.type === 'int_range' ? metaItem.value ? metaItem.value[0] + ' ~ ' +  metaItem.value[1] : '' : ''}</td>
+                                  </tr>  
+                                );
+                              }
+                            })}
+                          </tbody>
+                        </Table>
+                        </>
+                      );
+                    }
+                  })}
+              </Col>
+            </Row>
+          </ModalBody>
+        </div>
+        <ModalFooter>
+          <Pdf targetRef={ref} filename={this.state.person_name+"-Combined-Case.pdf"} options={pdfOptions}>
+            {
+              ({ toPdf }) => 
+              <Button color="secondary" outline onClick={toPdf}>
+                <IntlMessages id= "pages.export" />
+              </Button>
+            }
+          </Pdf>
+          
+          <Button color="secondary" outline onClick={this.handleCancel}>
+            <IntlMessages id= "pages.cancel" />
+          </Button>
+        </ModalFooter>
+      </Modal>
+    );
+  }
+}
+
+export default connect(
+  ({ people }) => ({
+    cases: people.cases,
+  }),
+  {
+    getPeopleCases: getPeopleCases,
+    editCombinedCase: editCombinedCase,
+  },
+)(ShowCombinedCaseModal);
