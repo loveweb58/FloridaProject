@@ -20,7 +20,7 @@
         "firebase": "^7.14.1",
         "formik": "^1.5.1",
         "js-base64": "^2.5.2",
-        "jspdf": "^1.5.3",
+        "jspdf": "^2.3.1",
         "moment": "2.22.2",
         "mousetrap": "^1.6.3",
         "rc-slider": "^8.6.1",
