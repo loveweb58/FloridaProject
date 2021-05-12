@@ -14,7 +14,7 @@
         "availity-reactstrap-validation": "^2.0.4",
         "aws-sdk": "^2.681.0",
         "axios": "^0.18.0",
-        "chart.js": "^2.7.2",
+        "chart.js": "^2.9.4",
         "classnames": "2.2.6",
         "dropbox": "^4.0.30",
         "firebase": "^7.14.1",
